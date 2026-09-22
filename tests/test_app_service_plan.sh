@@ -13,5 +13,5 @@ dotnet tool run aspire -- publish \
   --non-interactive \
   --output-path "$output_path" >/dev/null
 
-grep -Fq "name: 'B1'" "$output_path/functions/functions.bicep"
-grep -Fq "tier: 'Basic'" "$output_path/functions/functions.bicep"
+grep -RFq "Microsoft.App/managedEnvironments" "$output_path"
+! grep -RFq "Microsoft.Web/serverfarms" "$output_path"

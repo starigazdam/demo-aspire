@@ -43,7 +43,7 @@ Preview Aspire's deployment pipeline without provisioning anything:
 scripts/deploy.sh dev --plan
 ```
 
-`aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a Linux Function App on a Basic B1 App Service plan, Container Registry, managed identity, storage, and Application Insights resources. This is not a free hosting plan; confirm the portal's cost estimate before deploying.
+`aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a consumption-based Azure Container Apps environment, Container Registry, managed identities, storage, and Log Analytics resources. The hosted Aspire dashboard is disabled; confirm the portal's cost estimate before deploying.
 
 ## Checks
 
