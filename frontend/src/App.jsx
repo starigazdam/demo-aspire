@@ -31,7 +31,7 @@ function App() {
   return <main>
     <p className="eyebrow">.NET Aspire demo</p>
     <h1>Small app, real wiring.</h1>
-    <p>React talks to a minimal ASP.NET Core API; Aspire runs both with PostgreSQL.</p>
+    <p>React talks to an Azure Function API; Aspire runs both with SQL Server locally.</p>
     <form onSubmit={addTodo}>
       <label htmlFor="title">Add a talking point</label>
       <div className="row">
