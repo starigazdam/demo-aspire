@@ -1,18 +1,22 @@
+using Aspire.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var sql = builder.AddAzureSqlServer("sql")
     .RunAsContainer(container => container.WithDataVolume());
 var database = sql.AddDatabase("appdb");
 
-builder.AddAzureContainerAppEnvironment("aca");
+builder.AddAzureAppServiceEnvironment("functions");
 
-var api = builder.AddProject<Projects.DemoAspire_Api>("api")
+var api = builder.AddAzureFunctionsProject<Projects.DemoAspire_Api>("api")
     .WithReference(database)
-    .WaitFor(database);
+    .WaitFor(database)
+    .WithExternalHttpEndpoints()
+    .PublishAsAzureAppServiceWebsite((_, app) => app.Kind = "functionapp,linux");
 
-builder.AddViteApp("frontend", "../frontend")
-    .WithReference(api)
-    .WaitFor(api)
-    .PublishAsStaticWebsite("/api", api);
+var frontend = builder.AddViteApp("frontend", "../frontend")
+    .WaitFor(api);
+
+api.PublishWithContainerFiles(frontend, "/home/site/wwwroot/wwwroot");
 
 builder.Build().Run();

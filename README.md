@@ -3,9 +3,11 @@
 A deliberately small monorepo for demonstrating **.NET Aspire** locally and on Azure:
 
 - React + Vite frontend
-- ASP.NET Core minimal API
+- .NET isolated Azure Functions HTTP API
 - Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
-- Azure Container Apps deployment target
+- Linux Azure Function App deployment target
+
+For Azure, Aspire builds the Vite assets into the Function App image; the Function App serves the SPA and `/api/todos`.
 
 ## Run locally
 
@@ -38,7 +40,7 @@ Preview Aspire's deployment pipeline without provisioning anything:
 scripts/deploy.sh dev --plan
 ```
 
-`aspire deploy` provisions or reuses the selected resource group and can create Azure SQL, Container Apps, Container Registry, managed identity, and Log Analytics resources. Confirm the Azure SQL Free Offer and the portal's cost estimate before the first deploy.
+`aspire deploy` provisions or reuses the selected resource group and can create Azure SQL, a Linux Function App on an App Service Premium V3 plan, Container Registry, managed identity, storage, and Application Insights resources. This is not a free hosting plan; confirm the portal's cost estimate before deploying.
 
 ## Checks
 
