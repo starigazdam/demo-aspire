@@ -4,7 +4,7 @@ A deliberately small monorepo for demonstrating **.NET Aspire** locally and on A
 
 - React + Vite frontend
 - .NET isolated Azure Functions HTTP API
-- Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
+- Azure Cosmos DB for NoSQL, emulated locally by Aspire
 - Linux Azure Function App deployment target
 
 For Azure, Aspire builds the Vite assets into the Function App image. The Function App serves the SPA at `/web/` and the API at `/api/todos`.
@@ -20,7 +20,7 @@ npm ci --prefix frontend
 dotnet run --project DemoAspire.AppHost
 ```
 
-Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in SQL Server.
+Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in Cosmos DB.
 
 ## Deploy dev or tst
 
@@ -40,7 +40,7 @@ Preview Aspire's deployment pipeline without provisioning anything:
 scripts/deploy.sh dev --plan
 ```
 
-`aspire deploy` provisions or reuses the selected resource group and can create Azure SQL, a Linux Function App on an App Service Premium V3 plan, Container Registry, managed identity, storage, and Application Insights resources. This is not a free hosting plan; confirm the portal's cost estimate before deploying.
+`aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a Linux Function App on an App Service Premium V3 plan, Container Registry, managed identity, storage, and Application Insights resources. This is not a free hosting plan; confirm the portal's cost estimate before deploying.
 
 ## Checks
 
