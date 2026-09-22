@@ -1,10 +1,11 @@
 # demo-aspire
 
-A deliberately small monorepo for demonstrating **.NET Aspire** locally:
+A deliberately small monorepo for demonstrating **.NET Aspire** locally and on Azure:
 
 - React + Vite frontend
 - ASP.NET Core minimal API
 - Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
+- Azure Container Apps deployment target
 
 ## Run locally
 
@@ -19,20 +20,32 @@ dotnet run --project DemoAspire.AppHost
 
 Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in SQL Server.
 
-## Azure demo boundary
+## Deploy dev or tst
 
-The AppHost has a real static-site publish owner for the frontend, but this repository deliberately does **not** provision Azure resources or credentials. Authenticate and inspect your subscription before choosing a target:
+The same checked-in command is used locally and by the manual GitHub Actions workflow. It maps `dev` to resource group `demo-aspire-dev` and `tst` to `demo-aspire-tst`; Aspire keeps deployment state separately for each `--environment`.
 
 ```bash
 az login
-az account show --output table
+export AZURE_SUBSCRIPTION_ID="<subscription-id>"
+export AZURE_LOCATION="westeurope"
+scripts/deploy.sh dev
+scripts/deploy.sh tst
 ```
 
-A practical low-cost demo split is Azure Static Web Apps for the Vite output plus Azure Container Apps for the API. The AppHost declares Azure SQL and uses its local SQL Server container emulator during development; Aspire's Azure SQL integration selects the Azure SQL Free Offer when deployed. Confirm the offer is available for the selected subscription and check the portal's cost estimate before provisioning.
+Preview Aspire's deployment pipeline without provisioning anything:
+
+```bash
+scripts/deploy.sh dev --plan
+```
+
+GitHub Actions is deliberately `workflow_dispatch` only. Configure these repository environment variables for both `dev` and `tst`: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, and `AZURE_LOCATION`. The workflow uses `azure/login` OIDC, then invokes the exact same script.
+
+`aspire deploy` provisions or reuses the selected resource group and can create Azure SQL, Container Apps, Container Registry, managed identity, and Log Analytics resources. Confirm the Azure SQL Free Offer and the portal's cost estimate before the first deploy.
 
 ## Checks
 
 ```bash
 dotnet build DemoAspire.sln
 npm run build --prefix frontend
+scripts/deploy.sh dev --plan
 ```

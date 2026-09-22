@@ -4,6 +4,8 @@ var sql = builder.AddAzureSqlServer("sql")
     .RunAsContainer(container => container.WithDataVolume());
 var database = sql.AddDatabase("appdb");
 
+builder.AddAzureContainerAppEnvironment("aca");
+
 var api = builder.AddProject<Projects.DemoAspire_Api>("api")
     .WithReference(database)
     .WaitFor(database);
