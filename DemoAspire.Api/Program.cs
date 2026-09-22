@@ -28,12 +28,12 @@ public sealed class Todos(TodoDb db)
 {
     [Function("GetTodos")]
     public async Task<IActionResult> Get(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "todos")] HttpRequest request) =>
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos")] HttpRequest request) =>
         new OkObjectResult(await db.Todos.OrderBy(todo => todo.Id).ToListAsync());
 
     [Function("CreateTodo")]
     public async Task<IActionResult> Create(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "todos")] HttpRequest request)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/todos")] HttpRequest request)
     {
         var todoRequest = await request.ReadFromJsonAsync<CreateTodo>();
         if (string.IsNullOrWhiteSpace(todoRequest?.Title))
