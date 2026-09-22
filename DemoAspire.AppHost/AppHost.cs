@@ -1,4 +1,5 @@
 using Aspire.Hosting;
+using Azure.Provisioning.AppService;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -7,7 +8,16 @@ var cosmos = builder.AddAzureCosmosDB("cosmos")
 var database = cosmos.AddCosmosDatabase("appdb");
 var todos = database.AddContainer("todos", "/id");
 
-builder.AddAzureAppServiceEnvironment("functions");
+builder.AddAzureAppServiceEnvironment("functions")
+    .ConfigureInfrastructure(infra =>
+    {
+        var plan = infra.GetProvisionableResources().OfType<AppServicePlan>().Single();
+        plan.Sku = new AppServiceSkuDescription
+        {
+            Name = "B1",
+            Tier = "Basic"
+        };
+    });
 
 var api = builder.AddAzureFunctionsProject<Projects.DemoAspire_Api>("api")
     .WithEnvironment("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated")
