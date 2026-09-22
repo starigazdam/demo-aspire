@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.DS_Store
+frontend/node_modules/
+frontend/dist/
+.tools/
+.env
+.env.*
+!.env.example
