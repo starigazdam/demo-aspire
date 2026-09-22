@@ -36,9 +36,14 @@ scripts/deploy.sh dev --plan
 
 # Deploy. The command prints the public Container Apps URL.
 scripts/deploy.sh dev
+```
 
-# Delete every resource in the selected environment when finished.
-scripts/destroy.sh dev
+## Clean up
+
+This permanently deletes all resources in the selected environment. Review the printed subscription and resource group, then pass the explicit confirmation flag:
+
+```bash
+scripts/destroy.sh dev --yes
 ```
 
 `aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a consumption-based Azure Container Apps environment, Container Registry, managed identities, storage, and Log Analytics resources. The hosted Aspire dashboard is disabled; confirm the portal's cost estimate before deploying.

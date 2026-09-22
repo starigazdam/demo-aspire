@@ -14,10 +14,16 @@ chmod +x "$tmpdir/dotnet"
 export DESTROY_TEST_LOG="$tmpdir/log"
 export AZURE_SUBSCRIPTION_ID=test-subscription
 export AZURE_LOCATION=uksouth
-PATH="$tmpdir:$PATH" "$repo_root/scripts/destroy.sh" dev
+if PATH="$tmpdir:$PATH" "$repo_root/scripts/destroy.sh" dev >/dev/null 2>&1; then
+  printf 'destroy requires --yes\n' >&2
+  exit 1
+fi
+
+PATH="$tmpdir:$PATH" "$repo_root/scripts/destroy.sh" dev --yes >"$tmpdir/output"
 
 grep -Fqx 'subscription=test-subscription' "$DESTROY_TEST_LOG"
 grep -Fqx 'location=uksouth' "$DESTROY_TEST_LOG"
 grep -Fqx 'resource_group=demo-aspire-dev' "$DESTROY_TEST_LOG"
+grep -Fqx 'Destroying resource group demo-aspire-dev in subscription test-subscription' "$tmpdir/output"
 grep -F 'args=tool run aspire destroy ' "$DESTROY_TEST_LOG" >/dev/null
 grep -F -- "--apphost $repo_root/DemoAspire.AppHost --environment dev --non-interactive --yes" "$DESTROY_TEST_LOG" >/dev/null

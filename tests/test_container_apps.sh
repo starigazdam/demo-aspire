@@ -14,4 +14,7 @@ dotnet tool run aspire -- publish \
   --output-path "$output_path" >/dev/null
 
 grep -RFq "Microsoft.App/managedEnvironments" "$output_path"
-! grep -RFq "Microsoft.Web/serverfarms" "$output_path"
+if grep -RFq "Microsoft.Web/serverfarms" "$output_path"; then
+  printf 'generated deployment must not include an App Service plan\n' >&2
+  exit 1
+fi
