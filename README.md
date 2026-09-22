@@ -4,10 +4,10 @@ A deliberately small monorepo for demonstrating **.NET Aspire** locally and on A
 
 - React + Vite frontend
 - .NET isolated Azure Functions HTTP API
-- Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
-- Linux Azure Function App deployment target
+- Azure Cosmos DB for NoSQL, emulated locally by Aspire
+- Azure Container Apps Consumption deployment target
 
-For Azure, Aspire builds the Vite assets into the Function App image. The Function App serves the SPA at `/web/` and the API at `/api/todos`.
+For Azure, Aspire builds the Vite assets into the Functions container image. The Container App serves the SPA at `/web/` and the API at `/api/todos`.
 
 ## Run locally
 
@@ -20,27 +20,34 @@ npm ci --prefix frontend
 dotnet run --project DemoAspire.AppHost
 ```
 
-Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in SQL Server.
+Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in Cosmos DB.
 
 ## Deploy dev or tst
 
-The checked-in command maps `dev` to resource group `demo-aspire-dev` and `tst` to `demo-aspire-tst`; Aspire keeps deployment state separately for each `--environment`.
+The checked-in command maps `dev` to resource group `demo-aspire-dev` and `tst` to `demo-aspire-tst`; Aspire keeps deployment state separately for each `--environment`. You need the Azure CLI logged in to the target subscription and Docker with Buildx and a running daemon; Aspire builds and pushes the Functions container image.
 
 ```bash
 az login
 export AZURE_SUBSCRIPTION_ID="<subscription-id>"
-export AZURE_LOCATION="westeurope"
+export AZURE_LOCATION="uksouth" # choose a region that accepts new Cosmos and Container Apps resources
+
+# Optional: inspect the pipeline without provisioning.
+scripts/deploy.sh dev --plan
+
+# Deploy. The command prints the public Container Apps URL.
 scripts/deploy.sh dev
-scripts/deploy.sh tst
 ```
 
-Preview Aspire's deployment pipeline without provisioning anything:
+## Clean up
+
+This permanently deletes all resources in the selected environment. First inspect the target without deleting it, then rerun with the explicit confirmation flag:
 
 ```bash
-scripts/deploy.sh dev --plan
+scripts/destroy.sh dev       # prints the target and stops
+scripts/destroy.sh dev --yes # destroys the printed target
 ```
 
-`aspire deploy` provisions or reuses the selected resource group and can create Azure SQL, a Linux Function App on an App Service Premium V3 plan, Container Registry, managed identity, storage, and Application Insights resources. This is not a free hosting plan; confirm the portal's cost estimate before deploying.
+`aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a consumption-based Azure Container Apps environment, Container Registry, managed identities, storage, and Log Analytics resources. The hosted Aspire dashboard is disabled; confirm the portal's cost estimate before deploying.
 
 ## Checks
 

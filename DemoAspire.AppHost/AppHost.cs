@@ -2,18 +2,19 @@ using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var sql = builder.AddAzureSqlServer("sql")
-    .RunAsContainer(container => container.WithDataVolume());
-var database = sql.AddDatabase("appdb");
+var cosmos = builder.AddAzureCosmosDB("cosmos")
+    .RunAsEmulator(container => container.WithDataVolume());
+var database = cosmos.AddCosmosDatabase("appdb");
+var todos = database.AddContainer("todos", "/id");
 
-builder.AddAzureAppServiceEnvironment("functions");
+builder.AddAzureContainerAppEnvironment("functions")
+    .WithDashboard(false);
 
 var api = builder.AddAzureFunctionsProject<Projects.DemoAspire_Api>("api")
     .WithEnvironment("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated")
-    .WithReference(database)
-    .WaitFor(database)
-    .WithExternalHttpEndpoints()
-    .PublishAsAzureAppServiceWebsite((_, app) => app.Kind = "functionapp,linux");
+    .WithReference(todos)
+    .WaitFor(todos)
+    .WithExternalHttpEndpoints();
 
 var frontend = builder.AddViteApp("frontend", "../frontend")
     .WithEnvironment("services__api__http__0", api.GetEndpoint("http"))

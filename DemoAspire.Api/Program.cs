@@ -1,35 +1,35 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddDbContext<TodoDb>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("appdb"),
-        sql => sql.EnableRetryOnFailure()));
+builder.AddAzureCosmosContainer("todos");
 builder.ConfigureFunctionsWebApplication();
 
-var host = builder.Build();
-using (var scope = host.Services.CreateScope())
-{
-    await scope.ServiceProvider.GetRequiredService<TodoDb>().Database.EnsureCreatedAsync();
-}
+builder.Build().Run();
 
-host.Run();
-
-public sealed class Todos(TodoDb db)
+public sealed class Todos(Container todos)
 {
     [Function("GetTodos")]
     public async Task<IActionResult> Get(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos")] HttpRequest request) =>
-        new OkObjectResult(await db.Todos.OrderBy(todo => todo.Id).ToListAsync());
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos")] HttpRequest request)
+    {
+        var result = new List<Todo>();
+        using var iterator = todos.GetItemQueryIterator<Todo>(
+            new QueryDefinition("SELECT * FROM c ORDER BY c.createdAt"));
+
+        while (iterator.HasMoreResults)
+        {
+            result.AddRange(await iterator.ReadNextAsync());
+        }
+
+        return new OkObjectResult(result);
+    }
 
     [Function("CreateTodo")]
     public async Task<IActionResult> Create(
@@ -41,22 +41,12 @@ public sealed class Todos(TodoDb db)
             return new BadRequestObjectResult(new { title = "Title is required." });
         }
 
-        var todo = new Todo { Title = todoRequest.Title.Trim() };
-        db.Todos.Add(todo);
-        await db.SaveChangesAsync();
-        return new CreatedResult($"/api/todos/{todo.Id}", todo);
+        var todo = new Todo(Guid.NewGuid().ToString("N"), todoRequest.Title.Trim(), DateTimeOffset.UtcNow.ToString("O"));
+        await todos.CreateItemAsync(todo, new PartitionKey(todo.id));
+        return new CreatedResult($"/api/todos/{todo.id}", todo);
     }
 }
 
-public sealed class TodoDb(DbContextOptions<TodoDb> options) : DbContext(options)
-{
-    public DbSet<Todo> Todos => Set<Todo>();
-}
-
-public sealed class Todo
-{
-    public int Id { get; set; }
-    public required string Title { get; set; }
-}
+public sealed record Todo(string id, string title, string createdAt);
 
 public sealed record CreateTodo(string Title);
