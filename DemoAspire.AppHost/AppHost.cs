@@ -16,6 +16,7 @@ var api = builder.AddAzureFunctionsProject<Projects.DemoAspire_Api>("api")
     .PublishAsAzureAppServiceWebsite((_, app) => app.Kind = "functionapp,linux");
 
 var frontend = builder.AddViteApp("frontend", "../frontend")
+    .WithEnvironment("services__api__http__0", api.GetEndpoint("http"))
     .WaitFor(api);
 
 api.PublishWithContainerFiles(frontend, "/home/site/wwwroot/wwwroot");
