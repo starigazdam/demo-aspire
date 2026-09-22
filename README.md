@@ -7,7 +7,7 @@ A deliberately small monorepo for demonstrating **.NET Aspire** locally and on A
 - Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
 - Linux Azure Function App deployment target
 
-For Azure, Aspire builds the Vite assets into the Function App image; the Function App serves the SPA and `/api/todos`.
+For Azure, Aspire builds the Vite assets into the Function App image. The Function App serves the SPA at `/web/` and the API at `/api/todos`.
 
 ## Run locally
 

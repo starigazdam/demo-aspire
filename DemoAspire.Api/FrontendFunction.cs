@@ -10,7 +10,7 @@ public sealed class FrontendFunction
 
     [Function("Frontend")]
     public IActionResult Get(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{*path}")] HttpRequest request,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "web/{*path}")] HttpRequest request,
         string? path)
     {
         if (path?.StartsWith("api/", StringComparison.OrdinalIgnoreCase) == true)
