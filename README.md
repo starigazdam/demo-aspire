@@ -5,9 +5,9 @@ A deliberately small monorepo for demonstrating **.NET Aspire** locally and on A
 - React + Vite frontend
 - .NET isolated Azure Functions HTTP API
 - Azure Cosmos DB for NoSQL, emulated locally by Aspire
-- Linux Azure Function App deployment target
+- Azure Container Apps Consumption deployment target
 
-For Azure, Aspire builds the Vite assets into the Function App image. The Function App serves the SPA at `/web/` and the API at `/api/todos`.
+For Azure, Aspire builds the Vite assets into the Functions container image. The Container App serves the SPA at `/web/` and the API at `/api/todos`.
 
 ## Run locally
 
@@ -24,23 +24,21 @@ Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` r
 
 ## Deploy dev or tst
 
-The checked-in command maps `dev` to resource group `demo-aspire-dev` and `tst` to `demo-aspire-tst`; Aspire keeps deployment state separately for each `--environment`.
+The checked-in command maps `dev` to resource group `demo-aspire-dev` and `tst` to `demo-aspire-tst`; Aspire keeps deployment state separately for each `--environment`. You need the Azure CLI logged in to the target subscription and Docker with Buildx and a running daemon; Aspire builds and pushes the Functions container image.
 
 ```bash
 az login
 export AZURE_SUBSCRIPTION_ID="<subscription-id>"
-export AZURE_LOCATION="westeurope"
-scripts/deploy.sh dev
-scripts/deploy.sh tst
+export AZURE_LOCATION="uksouth" # choose a region that accepts new Cosmos and Container Apps resources
 
-# Destroy all resources for one environment after a disposable run.
-scripts/destroy.sh dev
-```
-
-Preview Aspire's deployment pipeline without provisioning anything:
-
-```bash
+# Optional: inspect the pipeline without provisioning.
 scripts/deploy.sh dev --plan
+
+# Deploy. The command prints the public Container Apps URL.
+scripts/deploy.sh dev
+
+# Delete every resource in the selected environment when finished.
+scripts/destroy.sh dev
 ```
 
 `aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a consumption-based Azure Container Apps environment, Container Registry, managed identities, storage, and Log Analytics resources. The hosted Aspire dashboard is disabled; confirm the portal's cost estimate before deploying.
