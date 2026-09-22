@@ -1,0 +1,10 @@
+main { max-width: 42rem; margin: 5rem auto; padding: 2rem; }
+.eyebrow { color: #7c3aed; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+form { margin: 2rem 0; }
+label { display: block; font-weight: 600; margin-bottom: .5rem; }
+.row { display: flex; gap: .75rem; }
+input { flex: 1; padding: .75rem; font: inherit; }
+button { background: #7c3aed; border: 0; color: white; cursor: pointer; font: inherit; padding: .75rem 1rem; }
+ul { padding-left: 1.25rem; }
+li { margin: .5rem 0; }
+.error { color: #b91c1c; }
