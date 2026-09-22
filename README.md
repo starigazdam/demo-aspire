@@ -4,7 +4,7 @@ A deliberately small monorepo for demonstrating **.NET Aspire** locally:
 
 - React + Vite frontend
 - ASP.NET Core minimal API
-- PostgreSQL, run as an Aspire-managed container
+- Azure SQL Database, emulated locally by an Aspire-managed SQL Server container
 
 ## Run locally
 
@@ -17,7 +17,7 @@ npm ci --prefix frontend
 dotnet run --project DemoAspire.AppHost
 ```
 
-Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in PostgreSQL.
+Open the Aspire dashboard URL printed by the AppHost, then open the `frontend` resource. Add an item: the browser calls the API through Vite's `/api` proxy and the API stores it in SQL Server.
 
 ## Azure demo boundary
 
@@ -28,7 +28,7 @@ az login
 az account show --output table
 ```
 
-A practical low-cost demo split is Azure Static Web Apps for the Vite output plus Azure Container Apps for the API. PostgreSQL Flexible Server is not a permanently free service; use its trial/free offer only if it is currently available in the selected subscription, or choose a short-lived demo database and delete it afterwards. Check current Azure pricing and the portal's cost estimate before provisioning.
+A practical low-cost demo split is Azure Static Web Apps for the Vite output plus Azure Container Apps for the API. The AppHost declares Azure SQL and uses its local SQL Server container emulator during development; Aspire's Azure SQL integration selects the Azure SQL Free Offer when deployed. Confirm the offer is available for the selected subscription and check the portal's cost estimate before provisioning.
 
 ## Checks
 

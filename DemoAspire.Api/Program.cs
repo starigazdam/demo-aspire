@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddDbContext<TodoDb>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("appdb")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("appdb")));
 
 var app = builder.Build();
 
