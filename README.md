@@ -32,6 +32,9 @@ export AZURE_SUBSCRIPTION_ID="<subscription-id>"
 export AZURE_LOCATION="westeurope"
 scripts/deploy.sh dev
 scripts/deploy.sh tst
+
+# Destroy all resources for one environment after a disposable run.
+scripts/destroy.sh dev
 ```
 
 Preview Aspire's deployment pipeline without provisioning anything:
