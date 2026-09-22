@@ -9,6 +9,7 @@ var database = sql.AddDatabase("appdb");
 builder.AddAzureAppServiceEnvironment("functions");
 
 var api = builder.AddAzureFunctionsProject<Projects.DemoAspire_Api>("api")
+    .WithEnvironment("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated")
     .WithReference(database)
     .WaitFor(database)
     .WithExternalHttpEndpoints()
