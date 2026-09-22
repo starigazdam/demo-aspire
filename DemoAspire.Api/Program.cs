@@ -11,7 +11,9 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddDbContext<TodoDb>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("appdb")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("appdb"),
+        sql => sql.EnableRetryOnFailure()));
 builder.ConfigureFunctionsWebApplication();
 
 var host = builder.Build();
