@@ -40,10 +40,11 @@ scripts/deploy.sh dev
 
 ## Clean up
 
-This permanently deletes all resources in the selected environment. Review the printed subscription and resource group, then pass the explicit confirmation flag:
+This permanently deletes all resources in the selected environment. First inspect the target without deleting it, then rerun with the explicit confirmation flag:
 
 ```bash
-scripts/destroy.sh dev --yes
+scripts/destroy.sh dev       # prints the target and stops
+scripts/destroy.sh dev --yes # destroys the printed target
 ```
 
 `aspire deploy` provisions or reuses the selected resource group and can create Azure Cosmos DB, a consumption-based Azure Container Apps environment, Container Registry, managed identities, storage, and Log Analytics resources. The hosted Aspire dashboard is disabled; confirm the portal's cost estimate before deploying.
