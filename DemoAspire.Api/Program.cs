@@ -8,7 +8,11 @@ using Microsoft.Extensions.Hosting;
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddAzureCosmosContainer("todos");
+builder.AddAzureCosmosContainer("todos", settings =>
+{
+    settings.DatabaseName = "appdb";
+    settings.ContainerName = "todos";
+});
 builder.ConfigureFunctionsWebApplication();
 
 builder.Build().Run();

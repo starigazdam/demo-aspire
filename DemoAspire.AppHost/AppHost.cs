@@ -3,7 +3,12 @@ using Aspire.Hosting;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cosmos = builder.AddAzureCosmosDB("cosmos")
-    .RunAsEmulator(container => container.WithDataVolume());
+    .RunAsEmulator(container => 
+    {
+        // Use 'latest' tag (2.14.28.0) which has valid evaluation period
+        // The 'stable' tag has an expired evaluation license
+        container.WithImageTag("latest").WithDataVolume();
+    });
 var database = cosmos.AddCosmosDatabase("appdb");
 var todos = database.AddContainer("todos", "/id");
 
